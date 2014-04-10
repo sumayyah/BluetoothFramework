@@ -9,9 +9,38 @@
     android:id="@+id/container"
     tools:context="com.example.bluetoothframework.bluetoothframework.MainActivity">
 
-    <TextView
-        android:text="@string/hello_world"
+    <Button
+        android:id="@+id/getDataButton"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="Get Data"/>
+
+    <TextView
+        android:id="@+id/fuelUsed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Fuel Used"
+        android:layout_below="@id/getDataButton"/>
+
+    <TextView
+        android:id="@+id/fuelUsedData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Currently Nil"
+        android:layout_below="@id/fuelUsed"/>
+
+    <TextView
+        android:id="@+id/metric"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/fuelUsedData"
+        android:text="In terms of metric"/>
+    <TextView
+        android:id="@+id/metricData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/metric"
+        android:text="Currently Nil"/>
+
 
 </RelativeLayout>
