@@ -2,6 +2,7 @@ package com.example.bluetoothframework.bluetoothframework;
 
 import android.app.Activity;
 //import android.support.v7.app.ActionBarActivity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -60,8 +61,10 @@ public class MainActivity extends Activity{
     private TextView metricData;
 
     private int initFuel;
-    private final int tankCapacity = 14; //TODO: store this when the user starts, then retrieve from storage
+    private float tankCapacity;
     private final double treesPerGallon = 0.228;
+
+    private final String PREFS_NAME = "MyPreferences";
 
 
     @Override
@@ -73,12 +76,9 @@ public class MainActivity extends Activity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final ArrayList<String> devicesList = new ArrayList<String>();
-
         getDataButton = (Button)(findViewById(R.id.getDataButton));
         fuelUsedData = (TextView)(findViewById(R.id.fuelUsedData));
         metricData = (TextView)(findViewById(R.id.metricData));
-
 
         mBluetoothAdapter = mBluetoothAdapter.getDefaultAdapter();
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices(); //Preloaded paired devices in memory
@@ -87,46 +87,17 @@ public class MainActivity extends Activity{
         if(mBluetoothAdapter==null) Console.log("Bluetooth is not supported in device."); //TODO: Show alert
         else Console.log("Bluetooth is supported in device.");
 
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+
+        if(settings.getBoolean("my_first_time", true)){
+            Console.log("FIRST TIME!!");
+            collectUserData(settings);
+            settings.edit().putBoolean("my_first_time", false).commit();
+        }else{
+            tankCapacity = settings.getFloat("tank_capacity", 14);
+        }
 
 
-        /*If there are paired devices*/
-        if (pairedDevices.size() > 0) {
-            Console.log("Paired devices found");
-            // Loop through paired devices
-            for (BluetoothDevice device : pairedDevices) {
-                // Add the name and address to an array adapter to show in a ListView
-                devicesList.add(device.getName() + "\n" + device.getAddress());
-                Console.log("Device "+device.getName() + "\n" + device.getAddress());
-            }
-        }else Console.log("No paired devices");
-
-        /*Find new Bluetooth devices*/
-        /*TODO: This does not work when re-registering a previously paired device. Double-check with new BT device*/
-        BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-            public void onReceive(Context context, Intent intent) {
-                Console.log("Starting broadcastReceiver");
-                String action = intent.getAction();
-                // When discovery finds a device
-                if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                    Console.log("Device found");
-                    // Get the BluetoothDevice object from the Intent
-                    BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                    // Add the name and address to an array adapter to show in a ListView
-                    devicesList.add(device.getName() + "\n" + device.getAddress());
-                    Console.log("Device "+device.getName() + "\n" + device.getAddress());
-                }else Console.log("No devices found");
-
-            }
-        };
-        // Register the BroadcastReceiver
-        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-        registerReceiver(broadcastReceiver, filter);
-
-        /*Make your own device discoverable*/
-//        Intent discoverableIntent = new Intent(mBluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-//        discoverableIntent.putExtra(mBluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-//        startActivity(discoverableIntent);
-            //Finish with onActivityResult (this will also turn Bluetooth on)
 
     }
 
@@ -155,7 +126,6 @@ public class MainActivity extends Activity{
         /*Initialize buffer for outgoing messages*/
         mOutStringBuffer = new StringBuffer("");
 
-        //TODO: call onConnect
         getDataButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -189,10 +159,15 @@ public class MainActivity extends Activity{
 
         switch (requestCode){
             case REQUEST_CONNECT_DEVICE_SECURE:
+                // When DeviceListActivity returns with a device to connect
                 if (resultCode == Activity.RESULT_OK) {
-//                    connectDevice(data, true); TODO: Double check this process...need btooth mac address
-                    BluetoothDevice device = data.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                    mChatService.connect(device, true);
+                    connectDevice(data, true);
+                }
+                break;
+            case REQUEST_CONNECT_DEVICE_INSECURE:
+                // When DeviceListActivity returns with a device to connect
+                if (resultCode == Activity.RESULT_OK) {
+                    connectDevice(data, false);
                 }
                 break;
             case REQUEST_ENABLE_BT:
@@ -206,6 +181,16 @@ public class MainActivity extends Activity{
                     finish();
                 }
         }
+    }
+
+    private void connectDevice(Intent data, boolean secure) {
+        // Get the device MAC address
+        String address = data.getExtras()
+                .getString(Devices.EXTRA_DEVICE_ADDRESS);
+        // Get the BluetoothDevice object
+        BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
+        // Attempt to connect to the device
+        mChatService.connect(device, secure);
     }
 
     private final Handler mHandler = new Handler(){
@@ -253,7 +238,7 @@ public class MainActivity extends Activity{
         Console.log("Fuel in int is "+currentFuelPercentage);
 
         int percentFuelUsed = initFuel - currentFuelPercentage;
-        int fuelUsed = tankCapacity*(percentFuelUsed/100); //Find exact gallons used at this moment
+        float fuelUsed = tankCapacity*(percentFuelUsed/100); //Find exact gallons used at this moment
 
         fuelUsedData.setText("Used up "+fuelUsed+" gallons since last check");
 
@@ -267,7 +252,20 @@ public class MainActivity extends Activity{
         sendMessage("ATE0");
     }
 
-    private void displayMetric(int fuelUsed){
+    private void collectUserData(SharedPreferences settings){
+
+        //TODO: Get user's input
+        String make = "Honda";
+        String model = "Accord";
+        float tank_capacity =14;
+
+        settings.edit().putString("car_make", make).commit();
+        settings.edit().putString("car_model", model).commit();
+        settings.edit().putFloat("tank_capacity", tank_capacity).commit();
+    }
+
+
+    private void displayMetric(float fuelUsed){
 
         double treesUsed = fuelUsed*treesPerGallon;
 
@@ -289,11 +287,21 @@ public class MainActivity extends Activity{
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
+
+        Intent serverIntent = null;
+
+        switch (item.getItemId()) {
+
+            case R.id.secure_connect_scan:
+                // Launch the DeviceListActivity to see devices and do scan
+                serverIntent = new Intent(this, Devices.class);
+                startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_SECURE);
+                return true;
+
+
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
 
