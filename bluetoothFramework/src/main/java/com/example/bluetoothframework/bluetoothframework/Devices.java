@@ -1,6 +1,5 @@
 package com.example.bluetoothframework.bluetoothframework;
 
-import java.util.Set;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -12,13 +11,14 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.AdapterView.OnItemClickListener;
+
+import java.util.Set;
 
 /**
  * Created by sumayyah on 4/10/14.
@@ -42,13 +42,13 @@ public class Devices extends Activity {
 
         // Setup the window
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        setContentView(R.layout.device_list);
+        setContentView(R.layout.bt_device_menu);
 
         // Set result CANCELED in case the user backs out
         setResult(Activity.RESULT_CANCELED);
 
         // Initialize the button to perform device discovery
-        Button scanButton = (Button) findViewById(R.id.button_scan);
+        Button scanButton = (Button) findViewById(R.id.scan_button);
         scanButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 doDiscovery();
@@ -58,16 +58,16 @@ public class Devices extends Activity {
 
         // Initialize array adapters. One for already paired devices and
         // one for newly discovered devices
-        mPairedDevicesArrayAdapter = new ArrayAdapter<String>(this, R.layout.device_name);
-        mNewDevicesArrayAdapter = new ArrayAdapter<String>(this, R.layout.device_name);
+        mPairedDevicesArrayAdapter = new ArrayAdapter<String>(this, R.layout.bt_menu_cell);
+        mNewDevicesArrayAdapter = new ArrayAdapter<String>(this, R.layout.bt_menu_cell);
 
         // Find and set up the ListView for paired devices
-        ListView pairedListView = (ListView) findViewById(R.id.paired_devices);
+        ListView pairedListView = (ListView) findViewById(R.id.paired_devices_list);
         pairedListView.setAdapter(mPairedDevicesArrayAdapter);
         pairedListView.setOnItemClickListener(mDeviceClickListener);
 
         // Find and set up the ListView for newly discovered devices
-        ListView newDevicesListView = (ListView) findViewById(R.id.new_devices);
+        ListView newDevicesListView = (ListView) findViewById(R.id.new_devices_list);
         newDevicesListView.setAdapter(mNewDevicesArrayAdapter);
         newDevicesListView.setOnItemClickListener(mDeviceClickListener);
 
@@ -87,12 +87,13 @@ public class Devices extends Activity {
 
         // If there are paired devices, add each one to the ArrayAdapter
         if (pairedDevices.size() > 0) {
-            findViewById(R.id.title_paired_devices).setVisibility(View.VISIBLE);
+            findViewById(R.id.paired_devices_title).setVisibility(View.VISIBLE);
             for (BluetoothDevice device : pairedDevices) {
                 mPairedDevicesArrayAdapter.add(device.getName() + "\n" + device.getAddress());
             }
         } else {
-            String noDevices = getResources().getText(R.string.none_paired).toString();
+//            String noDevices = getResources().getText(R.string.none_paired).toString();
+            String noDevices = "No devices found";
             mPairedDevicesArrayAdapter.add(noDevices);
         }
     }
@@ -118,10 +119,10 @@ public class Devices extends Activity {
 
         // Indicate scanning in the title
         setProgressBarIndeterminateVisibility(true);
-        setTitle(R.string.scanning);
+//        setTitle(R.string.scanning);
 
         // Turn on sub-title for new devices
-        findViewById(R.id.title_new_devices).setVisibility(View.VISIBLE);
+        findViewById(R.id.new_devices_title).setVisibility(View.VISIBLE);
 
         // If we're already discovering, stop it
         if (mBtAdapter.isDiscovering()) {
@@ -171,9 +172,9 @@ public class Devices extends Activity {
                 // When discovery is finished, change the Activity title
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 setProgressBarIndeterminateVisibility(false);
-                setTitle(R.string.select_BTdevice);
+//                setTitle(R.string.select_BTdevice);
                 if (mNewDevicesArrayAdapter.getCount() == 0) {
-                    String noDevices = getResources().getText(R.string.none_found).toString();
+                    String noDevices = "No devices found";//getResources().getText(R.string.none_found).toString();
                     mNewDevicesArrayAdapter.add(noDevices);
                 }
             }
