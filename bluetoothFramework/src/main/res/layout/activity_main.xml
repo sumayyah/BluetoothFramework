@@ -15,6 +15,12 @@
         android:layout_height="wrap_content"
         android:text="Get Data"/>
 
+    <!--<Button-->
+        <!--android:id="@+id/scanButton"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_toRightOf="@+id/getDataButton"-->
+        <!--android:text="Scan for devices"/>-->
     <TextView
         android:id="@+id/fuelUsed"
         android:layout_width="wrap_content"
