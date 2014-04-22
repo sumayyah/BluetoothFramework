@@ -6,6 +6,11 @@
               android:layout_height="match_parent">
 
     <TextView
+            android:id="@+id/status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Not Connected"/>
+    <TextView
             android:id="@+id/paired_devices_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

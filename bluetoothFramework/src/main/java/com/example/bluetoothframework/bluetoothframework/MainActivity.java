@@ -1,30 +1,22 @@
 package com.example.bluetoothframework.bluetoothframework;
 
 import android.app.Activity;
-//import android.support.v7.app.ActionBarActivity;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
-import java.util.ArrayList;
 import java.util.Set;
+
+//import android.support.v7.app.ActionBarActivity;
 
 //Created by sumayyah
 public class MainActivity extends Activity{
@@ -57,8 +49,12 @@ public class MainActivity extends Activity{
     public static final int MESSAGE_TOAST = 5;
 
     private Button getDataButton;
+    private Button scanButton;
     private TextView fuelUsedData;
     private TextView metricData;
+    private TextView sendingMessage;
+    private TextView response;
+    private TextView connectStatus;
 
     private int initFuel;
     private float tankCapacity;
@@ -77,8 +73,12 @@ public class MainActivity extends Activity{
         setContentView(R.layout.activity_main);
 
         getDataButton = (Button)(findViewById(R.id.getDataButton));
+        scanButton = (Button)(findViewById(R.id.scanButton));
         fuelUsedData = (TextView)(findViewById(R.id.fuelUsedData));
         metricData = (TextView)(findViewById(R.id.metricData));
+        sendingMessage = (TextView)(findViewById(R.id.sendingMessage));
+        response = (TextView)(findViewById(R.id.response));
+        connectStatus = (TextView)(findViewById(R.id.connectStatus));
 
         mBluetoothAdapter = mBluetoothAdapter.getDefaultAdapter();
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices(); //Preloaded paired devices in memory
@@ -117,6 +117,17 @@ public class MainActivity extends Activity{
             if(mChatService == null) setupChat();
         }
 
+        scanButton.setOnClickListener(new View.OnClickListener(){
+            Intent serverIntent = null;
+
+            @Override
+            public void onClick(View v) {
+                // Launch the DeviceListActivity to see devices and do scan
+                serverIntent = new Intent(MainActivity.this, Devices.class);
+                startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_SECURE);
+            }
+        });
+
     }
 
     private void setupChat(){
@@ -129,9 +140,11 @@ public class MainActivity extends Activity{
         getDataButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendMessage("01 2F"); //get Fuel Percentage
+                sendMessage("012F"); //get Fuel Percentage
+                sendingMessage.setText("012F - Fuel level request");
             }
         });
+
     }
 
     public void sendMessage(String message){
@@ -161,12 +174,14 @@ public class MainActivity extends Activity{
             case REQUEST_CONNECT_DEVICE_SECURE:
                 // When DeviceListActivity returns with a device to connect
                 if (resultCode == Activity.RESULT_OK) {
+                    connectStatus.setText("Connecting...");
                     connectDevice(data, true);
                 }
                 break;
             case REQUEST_CONNECT_DEVICE_INSECURE:
                 // When DeviceListActivity returns with a device to connect
                 if (resultCode == Activity.RESULT_OK) {
+                    connectStatus.setText("Connecting...");
                     connectDevice(data, false);
                 }
                 break;
@@ -184,9 +199,11 @@ public class MainActivity extends Activity{
     }
 
     private void connectDevice(Intent data, boolean secure) {
-        // Get the device MAC address
-        String address = data.getExtras()
-                .getString(Devices.EXTRA_DEVICE_ADDRESS);
+        // Get the device MAC address and info
+        String address = data.getExtras().getString(Devices.EXTRA_DEVICE_ADDRESS);
+        String info = data.getExtras().getString(Devices.EXTRA_DEVICE_INFO);
+
+        connectStatus.setText("Connected to: "+info+" "+address);
         // Get the BluetoothDevice object
         BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
         // Attempt to connect to the device
@@ -249,6 +266,7 @@ public class MainActivity extends Activity{
     private void onConnect(){
 
         /*Initialize PID codes*/
+        Console.log("Sending initial message ATEO");
         sendMessage("ATE0");
     }
 
@@ -294,8 +312,8 @@ public class MainActivity extends Activity{
 
             case R.id.secure_connect_scan:
                 // Launch the DeviceListActivity to see devices and do scan
-                serverIntent = new Intent(this, Devices.class);
-                startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_SECURE);
+//                serverIntent = new Intent(this, Devices.class);
+//                startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_SECURE);
                 return true;
 
 

@@ -30,11 +30,14 @@ public class Devices extends Activity {
 
     // Return Intent extra
     public static String EXTRA_DEVICE_ADDRESS = "device_address";
+    public static String EXTRA_DEVICE_INFO = "device_info";
 
     // Member fields
     private BluetoothAdapter mBtAdapter;
     private ArrayAdapter<String> mPairedDevicesArrayAdapter;
     private ArrayAdapter<String> mNewDevicesArrayAdapter;
+
+    private TextView status;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +49,8 @@ public class Devices extends Activity {
 
         // Set result CANCELED in case the user backs out
         setResult(Activity.RESULT_CANCELED);
+
+        status = (TextView)(findViewById(R.id.status));
 
         // Initialize the button to perform device discovery
         Button scanButton = (Button) findViewById(R.id.scan_button);
@@ -120,6 +125,7 @@ public class Devices extends Activity {
         // Indicate scanning in the title
         setProgressBarIndeterminateVisibility(true);
 //        setTitle(R.string.scanning);
+        status.setText("Scanning");
 
         // Turn on sub-title for new devices
         findViewById(R.id.new_devices_title).setVisibility(View.VISIBLE);
@@ -146,6 +152,8 @@ public class Devices extends Activity {
             // Create the result Intent and include the MAC address
             Intent intent = new Intent();
             intent.putExtra(EXTRA_DEVICE_ADDRESS, address);
+            intent.putExtra(EXTRA_DEVICE_INFO, info);
+            Console.log("Put data in Devices bundle: "+info+" "+address);
 
             // Set result and finish this Activity
             setResult(Activity.RESULT_OK, intent);
@@ -173,8 +181,10 @@ public class Devices extends Activity {
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 setProgressBarIndeterminateVisibility(false);
 //                setTitle(R.string.select_BTdevice);
+                status.setText("Finished discovery");
                 if (mNewDevicesArrayAdapter.getCount() == 0) {
                     String noDevices = "No devices found";//getResources().getText(R.string.none_found).toString();
+                    status.setText("No devices found");
                     mNewDevicesArrayAdapter.add(noDevices);
                 }
             }

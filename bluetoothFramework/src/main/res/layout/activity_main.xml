@@ -9,24 +9,59 @@
     android:id="@+id/container"
     tools:context="com.example.bluetoothframework.bluetoothframework.MainActivity">
 
+    <TextView
+            android:id="@+id/connectStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Not Connected"
+            />
     <Button
         android:id="@+id/getDataButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Get Data"/>
+        android:text="Get Data"
+        android:layout_below="@+id/connectStatus"/>
 
-    <!--<Button-->
-        <!--android:id="@+id/scanButton"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_toRightOf="@+id/getDataButton"-->
-        <!--android:text="Scan for devices"/>-->
+    <Button
+        android:id="@+id/scanButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/getDataButton"
+        android:layout_below="@+id/connectStatus"
+        android:text="Connect"/>
+    <TextView
+            android:id="@+id/sendingLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sending: "
+            android:layout_below="@id/getDataButton"/>
+    <TextView
+            android:id="@+id/sendingMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Null"
+            android:layout_toRightOf="@+id/sendingLabel"
+            android:layout_below="@+id/getDataButton"/>
+    <TextView
+            android:id="@+id/responseLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Response: "
+            android:layout_below="@id/sendingLabel"/>
+    <TextView
+            android:id="@+id/response"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Null"
+            android:layout_toRightOf="@+id/responseLabel"
+            android:layout_below="@+id/sendingMessage"/>
+
     <TextView
         android:id="@+id/fuelUsed"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Fuel Used"
-        android:layout_below="@id/getDataButton"/>
+        android:layout_below="@id/responseLabel"/>
 
     <TextView
         android:id="@+id/fuelUsedData"
