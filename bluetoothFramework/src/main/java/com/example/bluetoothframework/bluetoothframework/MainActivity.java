@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.Arrays;
 import java.util.Set;
 
 //import android.support.v7.app.ActionBarActivity;
@@ -235,8 +236,8 @@ public class MainActivity extends Activity{
                     switch (msg.arg1){
 
                         case BluetoothChatService.STATE_CONNECTED:
-                            Console.log(classID+"Connected, calling onConnect");
-                            connectStatus.setText("Connected to "+mConnectedDeviceName);
+                            Console.log(classID + "Connected, calling onConnect");
+                            connectStatus.setText("Connected to " + mConnectedDeviceName);
                             onConnect();
                             break;
                         case BluetoothChatService.STATE_CONNECTING:
@@ -264,14 +265,51 @@ public class MainActivity extends Activity{
     };
 
     private void readMessage(Message msg){
+        String dataString;
+        String byteStr="";
+        byte[] tempByte;
         Console.log(classID+"Reading response");
         byte[] readBuffer = (byte[]) msg.obj;
-        String bufferString = new String(readBuffer);
+        String bufferString = new String(readBuffer, 0, msg.arg1);
         Console.log(classID+"\n"+"Raw buffer is: "+bufferString);
-        String readString = new String(readBuffer, 0, msg.arg1);
-        Console.log(classID+"\n"+"Response is: "+readString.trim() + " ");
 
-        response.append("\n"+"Command: "+command+"\n"+" Response: "+readString);
+//        switch(readBuffer.length){
+//            case 8:
+//                tempByte = Arrays.copyOfRange(readBuffer, 8, readBuffer.length-1);
+//                Console.log("Buffer length is 8 bytes, last byte is "+tempByte);
+//                byteStr = new String(tempByte);
+//                break;
+//            case 6:
+//                tempByte = Arrays.copyOfRange(readBuffer, 6, readBuffer.length-1);
+//                Console.log("Buffer length is 6 bytes, last byte is "+tempByte);
+//                byteStr = new String(tempByte);
+//                break;
+//            default:
+//                Console.log("Some wrong length "+readBuffer.length);
+//                break;
+//        }
+
+//        byte[] dataByte = Arrays.copyOfRange(readBuffer, readBuffer.length-2, readBuffer.length-1);
+        if(!command.equals("012f")) {
+            String arraylen = new String(String.valueOf(readBuffer.length-1));
+            tempByte = Arrays.copyOfRange(readBuffer, 8, readBuffer.length-1);
+            byteStr = new String(tempByte);
+            Console.log("NOT FUEL Buffer length is "+readBuffer.length+" till "+arraylen+", last byte is "+byteStr);
+        }
+
+        else {
+            String arraylen = new String(String.valueOf(readBuffer.length-1));
+            tempByte = Arrays.copyOfRange(readBuffer, 6, readBuffer.length-1);
+            byteStr = new String(tempByte);
+//            Console.log("Buffer length is 6 bytes, last byte is "+byteStr);
+            Console.log("FUEL Buffer length is "+readBuffer.length+" till "+arraylen+", last byte is "+byteStr);
+        }
+
+
+//        String readString = new String(readBuffer, 0, msg.arg1);
+//        Console.log(classID+"\n"+"Response is: "+readString.trim() + " ");
+
+        response.append("\n"+"Command: "+command+"\n"+" Response: "+bufferString+"\n"+ "Bytes: "+byteStr);
 
 //        int currentFuelPercentage = Integer.parseInt(readString);
 //        Console.log(classID+"Fuel in int is "+currentFuelPercentage);
