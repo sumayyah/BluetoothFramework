@@ -11,7 +11,10 @@ import android.os.Message;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.Set;
@@ -20,10 +23,14 @@ import java.util.Set;
 
 //Created by sumayyah
 public class MainActivity extends Activity{
+    
+    private final String classID = "MainActivity";
 
 
     // Name of the connected device
     private String mConnectedDeviceName = null;
+    //Array adapter for the conversation thread
+    private ArrayAdapter<String> mConversationArrayAdapter;
     // String buffer for outgoing messages
     private static StringBuffer mOutStringBuffer;
     // Local Bluetooth adapter
@@ -55,7 +62,9 @@ public class MainActivity extends Activity{
     private TextView sendingMessage;
     private TextView response;
     private TextView connectStatus;
+    private EditText userInput;
 
+    private String command;
     private int initFuel;
     private float tankCapacity;
     private final double treesPerGallon = 0.228;
@@ -66,31 +75,30 @@ public class MainActivity extends Activity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        //BLUETOOTH TEST
-        int REQUEST_ENABLE_BT = 2;
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         getDataButton = (Button)(findViewById(R.id.getDataButton));
         scanButton = (Button)(findViewById(R.id.scanButton));
-        fuelUsedData = (TextView)(findViewById(R.id.fuelUsedData));
-        metricData = (TextView)(findViewById(R.id.metricData));
+//        fuelUsedData = (TextView)(findViewById(R.id.fuelUsedData));
+//        metricData = (TextView)(findViewById(R.id.metricData));
         sendingMessage = (TextView)(findViewById(R.id.sendingMessage));
         response = (TextView)(findViewById(R.id.response));
         connectStatus = (TextView)(findViewById(R.id.connectStatus));
+        userInput = (EditText)(findViewById(R.id.userInput));
 
         mBluetoothAdapter = mBluetoothAdapter.getDefaultAdapter();
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices(); //Preloaded paired devices in memory
 
         /*Check if device supports Bluetooth*/
-        if(mBluetoothAdapter==null) Console.log("Bluetooth is not supported in device."); //TODO: Show alert
-        else Console.log("Bluetooth is supported in device.");
+        if(mBluetoothAdapter==null) Console.log(classID+"Bluetooth is not supported in device."); //TODO: Show alert
+        else Console.log(classID+"Bluetooth is supported in device.");
 
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 
         if(settings.getBoolean("my_first_time", true)){
-            Console.log("FIRST TIME!!");
+            Console.log(classID+"FIRST TIME!!");
             collectUserData(settings);
             settings.edit().putBoolean("my_first_time", false).commit();
         }else{
@@ -111,9 +119,9 @@ public class MainActivity extends Activity{
         if (!mBluetoothAdapter.isEnabled()) {
             Intent enableBtIntent = new Intent(mBluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-            Console.log("Bluetooth is not enabled, request sent");
+            Console.log(classID+"Bluetooth is not enabled, request sent");
         }else {
-            Console.log("Bluetooth is enabled");
+            Console.log(classID+"Bluetooth is enabled");
             if(mChatService == null) setupChat();
         }
 
@@ -133,6 +141,8 @@ public class MainActivity extends Activity{
     private void setupChat(){
 
         mChatService = new BluetoothChatService(this, mHandler);
+        // Initialize the array adapter for the conversation thread
+
 
         /*Initialize buffer for outgoing messages*/
         mOutStringBuffer = new StringBuffer("");
@@ -140,8 +150,11 @@ public class MainActivity extends Activity{
         getDataButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendMessage("012F"); //get Fuel Percentage
-                sendingMessage.setText("012F - Fuel level request");
+
+                command = userInput.getText().toString();
+                userInput.setText("");
+                sendMessage(command + "\r"); //get Fuel Percentage
+                sendingMessage.setText("\n" + "Sent " + command);
             }
         });
 
@@ -151,7 +164,8 @@ public class MainActivity extends Activity{
 
         /*Make sure we are connected*/
         if(mChatService.getState() != BluetoothChatService.STATE_CONNECTED){
-            Console.log("Not connected!");
+            connectStatus.setText("Not connected!");
+            Console.log(classID+"Not connected!");
             return;
         }
 
@@ -159,7 +173,7 @@ public class MainActivity extends Activity{
 
             byte[] toSend = message.getBytes();
             mChatService.write(toSend);
-            Console.log("Written "+message);
+            Console.log(classID+"Written "+message);
 
             /*Reset output buffer*/
             mOutStringBuffer.setLength(0);
@@ -168,7 +182,7 @@ public class MainActivity extends Activity{
 
     public void onActivityResult(int requestCode, int resultCode, Intent data){
 
-        Console.log("on Activity result");
+        Console.log(classID+"on Activity result");
 
         switch (requestCode){
             case REQUEST_CONNECT_DEVICE_SECURE:
@@ -192,7 +206,7 @@ public class MainActivity extends Activity{
                     setupChat();
                 } else {
                     // User did not enable Bluetooth or an error occurred
-                    Console.log("BT not enabled");
+                    Console.log(classID+"BT not enabled");
                     finish();
                 }
         }
@@ -221,17 +235,22 @@ public class MainActivity extends Activity{
                     switch (msg.arg1){
 
                         case BluetoothChatService.STATE_CONNECTED:
+                            Console.log(classID+"Connected, calling onConnect");
+                            connectStatus.setText("Connected to "+mConnectedDeviceName);
                             onConnect();
                             break;
                         case BluetoothChatService.STATE_CONNECTING:
+                            connectStatus.setText("Connecting...");
                         case BluetoothChatService.STATE_LISTEN:
                         case BluetoothChatService.STATE_NONE:
                     }
                     break;
                 case MESSAGE_WRITE:
+                    Console.log(classID+"Write command given");
                     break;
                 case MESSAGE_READ:
                     readMessage(msg);
+
                     break;
                 case MESSAGE_DEVICE_NAME:
 
@@ -245,28 +264,32 @@ public class MainActivity extends Activity{
     };
 
     private void readMessage(Message msg){
-        Console.log("Reading message");
+        Console.log(classID+"Reading response");
         byte[] readBuffer = (byte[]) msg.obj;
-
+        String bufferString = new String(readBuffer);
+        Console.log(classID+"\n"+"Raw buffer is: "+bufferString);
         String readString = new String(readBuffer, 0, msg.arg1);
-        Console.log("Message is: "+readString);
+        Console.log(classID+"\n"+"Response is: "+readString.trim() + " ");
 
-        int currentFuelPercentage = Integer.parseInt(readString);
-        Console.log("Fuel in int is "+currentFuelPercentage);
+        response.append("\n"+"Command: "+command+"\n"+" Response: "+readString);
 
-        int percentFuelUsed = initFuel - currentFuelPercentage;
-        float fuelUsed = tankCapacity*(percentFuelUsed/100); //Find exact gallons used at this moment
+//        int currentFuelPercentage = Integer.parseInt(readString);
+//        Console.log(classID+"Fuel in int is "+currentFuelPercentage);
+//
+//        int percentFuelUsed = initFuel - currentFuelPercentage;
+//        float fuelUsed = tankCapacity*(percentFuelUsed/100); //Find exact gallons used at this moment
+//
+//        fuelUsedData.setText("Used up "+fuelUsed+" gallons since last check");
 
-        fuelUsedData.setText("Used up "+fuelUsed+" gallons since last check");
-
-        displayMetric(fuelUsed);
+//        String fuelUsed = readString;
+//        displayMetric(fuelUsed);
 
     }
 
     private void onConnect(){
 
         /*Initialize PID codes*/
-        Console.log("Sending initial message ATEO");
+        Console.log(classID+"Sending initial message ATEO");
         sendMessage("ATE0");
     }
 

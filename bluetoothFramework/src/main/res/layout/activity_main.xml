@@ -14,32 +14,42 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Not Connected"
+            android:padding="10px"
             />
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/connectStatus"
+        android:id="@+id/userInput"/>
     <Button
         android:id="@+id/getDataButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Get Data"
-        android:layout_below="@+id/connectStatus"/>
+        android:padding="10px"
+        android:layout_below="@+id/userInput"/>
 
     <Button
         android:id="@+id/scanButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/getDataButton"
-        android:layout_below="@+id/connectStatus"
+        android:layout_below="@+id/userInput"
+        android:padding="10px"
         android:text="Connect"/>
     <TextView
             android:id="@+id/sendingLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Sending: "
+        android:padding="10px"
             android:layout_below="@id/getDataButton"/>
     <TextView
             android:id="@+id/sendingMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Null"
+        android:padding="10px"
             android:layout_toRightOf="@+id/sendingLabel"
             android:layout_below="@+id/getDataButton"/>
     <TextView
@@ -47,41 +57,47 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Response: "
+            android:padding="10px"
             android:layout_below="@id/sendingLabel"/>
     <TextView
             android:id="@+id/response"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Null"
+            android:padding="10px"
             android:layout_toRightOf="@+id/responseLabel"
             android:layout_below="@+id/sendingMessage"/>
 
-    <TextView
-        android:id="@+id/fuelUsed"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Fuel Used"
-        android:layout_below="@id/responseLabel"/>
+    <!--<TextView-->
+        <!--android:id="@+id/fuelUsed"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Fuel Used"-->
+        <!--android:padding="10px"-->
+        <!--android:layout_below="@id/responseLabel"/>-->
 
-    <TextView
-        android:id="@+id/fuelUsedData"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Currently Nil"
-        android:layout_below="@id/fuelUsed"/>
+    <!--<TextView-->
+        <!--android:id="@+id/fuelUsedData"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Currently Nil"-->
+        <!--android:padding="10px"-->
+        <!--android:layout_below="@id/fuelUsed"/>-->
 
-    <TextView
-        android:id="@+id/metric"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/fuelUsedData"
-        android:text="In terms of metric"/>
-    <TextView
-        android:id="@+id/metricData"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/metric"
-        android:text="Currently Nil"/>
+    <!--<TextView-->
+        <!--android:id="@+id/metric"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:padding="10px"-->
+        <!--android:layout_below="@+id/fuelUsedData"-->
+        <!--android:text="In terms of metric"/>-->
+    <!--<TextView-->
+        <!--android:id="@+id/metricData"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_below="@id/metric"-->
+        <!--android:padding="10px"-->
+        <!--android:text="Currently Nil"/>-->
 
 
 </RelativeLayout>
