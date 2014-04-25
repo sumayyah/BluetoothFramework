@@ -17,7 +17,7 @@
             android:padding="10px"
             />
     <EditText
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/connectStatus"
         android:id="@+id/userInput"/>
@@ -37,42 +37,115 @@
         android:layout_below="@+id/userInput"
         android:padding="10px"
         android:text="Connect"/>
-    <TextView
-            android:id="@+id/sendingLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Sending: "
-        android:padding="10px"
-            android:layout_below="@id/getDataButton"/>
-    <TextView
-            android:id="@+id/sendingMessage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Null"
-        android:padding="10px"
-            android:layout_toRightOf="@+id/sendingLabel"
-            android:layout_below="@+id/getDataButton"/>
-    <TextView
-            android:id="@+id/responseLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Response: "
-            android:padding="10px"
-            android:layout_below="@id/sendingLabel"/>
 
-    <ScrollView
+    <RelativeLayout
+        android:id="@+id/logLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/responseLabel"
-        android:layout_below="@+id/sendingMessage">
+        android:layout_below="@id/getDataButton">
         <TextView
-            android:id="@+id/response"
+                android:id="@+id/sendingLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sending: "
+                android:padding="10px"
+                />
+        <TextView
+                android:id="@+id/sendingMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Null"
+                android:padding="10px"
+                android:layout_toRightOf="@+id/sendingLabel"
+                />
+        <TextView
+                android:id="@+id/responseLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Log: "
+                android:padding="10px"
+                android:layout_below="@id/sendingLabel"/>
+
+        <ScrollView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Null"
-            android:padding="10px"
-            />
+            android:layout_toRightOf="@+id/responseLabel"
+            android:layout_below="@+id/sendingMessage">
+            <TextView
+                android:id="@+id/response"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Null"
+                android:padding="10px"
+                />
         </ScrollView>
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/getDataButton"
+        android:layout_toRightOf="@+id/scanButton">
+
+        <TextView
+            android:id="@+id/calculationsTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Calculations:"/>
+        <TextView
+            android:id="@+id/hexTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/calculationsTitle"
+            android:text="HEX: "/>
+        <TextView
+            android:id="@+id/hexVal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="null"
+            android:layout_toRightOf="@+id/hexTitle"
+            android:layout_below="@+id/calculationsTitle"/>
+        <TextView
+            android:id="@+id/intTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/hexTitle"
+            android:text="INT: "/>
+        <TextView
+            android:id="@+id/intVal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="null"
+            android:layout_toRightOf="@+id/intTitle"
+            android:layout_below="@+id/hexVal"/>
+        <TextView
+            android:id="@+id/valueTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/intTitle"
+            android:text="VALUE: "/>
+        <TextView
+            android:id="@+id/value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="null"
+            android:layout_toRightOf="@+id/valueTitle"
+            android:layout_below="@+id/intVal"/>
+
+        <TextView
+            android:id="@+id/metricTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/valueTitle"
+            android:text="METRIC: "/>
+        <TextView
+            android:id="@+id/metricVal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="null"
+            android:layout_toRightOf="@+id/metricTitle"
+            android:layout_below="@+id/value"/>
+
+        </RelativeLayout>
 
 
     <!--<TextView-->

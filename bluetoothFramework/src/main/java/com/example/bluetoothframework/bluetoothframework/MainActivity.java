@@ -17,6 +17,8 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 import java.util.Arrays;
 import java.util.Set;
 
@@ -30,8 +32,6 @@ public class MainActivity extends Activity{
 
     // Name of the connected device
     private String mConnectedDeviceName = null;
-    //Array adapter for the conversation thread
-    private ArrayAdapter<String> mConversationArrayAdapter;
     // String buffer for outgoing messages
     private static StringBuffer mOutStringBuffer;
     // Local Bluetooth adapter
@@ -58,12 +58,14 @@ public class MainActivity extends Activity{
 
     private Button getDataButton;
     private Button scanButton;
-    private TextView fuelUsedData;
-    private TextView metricData;
     private TextView sendingMessage;
     private TextView response;
     private TextView connectStatus;
     private EditText userInput;
+    private TextView hexVal;
+    private TextView intVal;
+    private TextView value;
+    private TextView metricVal;
 
     private String command="";
     private int initFuel;
@@ -82,12 +84,14 @@ public class MainActivity extends Activity{
 
         getDataButton = (Button)(findViewById(R.id.getDataButton));
         scanButton = (Button)(findViewById(R.id.scanButton));
-//        fuelUsedData = (TextView)(findViewById(R.id.fuelUsedData));
-//        metricData = (TextView)(findViewById(R.id.metricData));
         sendingMessage = (TextView)(findViewById(R.id.sendingMessage));
         response = (TextView)(findViewById(R.id.response));
         connectStatus = (TextView)(findViewById(R.id.connectStatus));
         userInput = (EditText)(findViewById(R.id.userInput));
+        hexVal = (TextView)(findViewById(R.id.hexVal));
+        intVal = (TextView)(findViewById(R.id.intVal));
+        value = (TextView)(findViewById(R.id.value));
+        metricVal = (TextView)(findViewById(R.id.metricVal));
 
         mBluetoothAdapter = mBluetoothAdapter.getDefaultAdapter();
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices(); //Preloaded paired devices in memory
@@ -321,6 +325,7 @@ public class MainActivity extends Activity{
         byte[] readBuffer = (byte[]) msg.obj;
         String bufferString = new String(readBuffer, 0, msg.arg1);
 
+        /*If we get 4 bytes of data returned*/
         if(bufferString!="" && bufferString.matches("\\s*[0-9A-Fa-f]{2} [0-9A-Fa-f]{2} [0-9A-Fa-f]{2} [0-9A-Fa-f]{2}\\s*\r?\n?")){
             Console.log("Buffer String matches 8 digit pattern: "+bufferString);
 
@@ -333,8 +338,14 @@ public class MainActivity extends Activity{
                 String finalString = firstPart+secondPart;
                 Console.log("No null pieces! They're "+firstPart+" and "+secondPart+" makes "+finalString);
 
+                hexVal.setText("0x"+finalString);
+                hexToInt(finalString);
+
+                response.append("\n"+"Command: "+command+"\n"+" Response: "+bufferString);
+
             } else Console.log("NUll pieces in first regex check :(");
         }
+        /*If we get 3 bytes of data returned*/
         else if (bufferString!="" && bufferString.matches("\\s*[0-9A-Fa-f]{2} [0-9A-Fa-f]{2} [0-9A-Fa-f]{2}\\s*\r\n?")){
             Console.log("Buffer String matches 4 digit pattern: "+bufferString);
 
@@ -345,6 +356,11 @@ public class MainActivity extends Activity{
                 String secondPart = bytes[2];
                 Console.log("No null pieces! It's "+secondPart);
 
+                hexVal.setText("0x"+secondPart);
+                hexToInt(secondPart);
+
+                response.append("\n"+"Command: "+command+"\n"+" Response: "+bufferString);
+
             } else Console.log("NUll pieces in second regex check :(");
         }
         else {
@@ -354,18 +370,23 @@ public class MainActivity extends Activity{
 
     private void hexToInt(String hexString){
 
-        if(hexString.length()==5){
-//            String temp = hexString.substring(1,2);
-//            String temp2 = hexString.substring(4,5);
-            String[] temp = hexString.split(" ");
-            Console.log("temps are "+temp[0]+temp[1]);
-            return;
-        }
-        if(hexString.length()>0) {
-            Console.log("hexString "+hexString+" length "+hexString.length());
-            int value = Integer.parseInt(hexString, 16);
-            Console.log("Int "+value);
-        }
+        int value = Integer.parseInt(hexString, 16);
+        Console.log("Converted! "+hexString+ " to "+value);
+
+        intVal.setText(value+"");
+
+//        if(hexString.length()==5){
+////            String temp = hexString.substring(1,2);
+////            String temp2 = hexString.substring(4,5);
+//            String[] temp = hexString.split(" ");
+//            Console.log("temps are "+temp[0]+temp[1]);
+//            return;
+//        }
+//        if(hexString.length()>0) {
+//            Console.log("hexString "+hexString+" length "+hexString.length());
+//            int value = Integer.parseInt(hexString, 16);
+//            Console.log("Int "+value);
+//        }
     }
 
     private void onConnect(){
@@ -392,7 +413,7 @@ public class MainActivity extends Activity{
 
         double treesUsed = fuelUsed*treesPerGallon;
 
-        metricData.setText(treesUsed+ " tree seedlings grown per 10 years");
+        metricVal.setText(treesUsed+ " tree seedlings grown per 10 years");
 
     }
 
