@@ -250,7 +250,6 @@ public class MainActivity extends Activity{
                     Console.log(classID+"Write command given");
                     break;
                 case MESSAGE_READ:
-                    Console.log(classID+" calling read message");
                     readMessage(msg);
 
                     break;
@@ -265,7 +264,7 @@ public class MainActivity extends Activity{
         }
     };
 
-    private void readMessage(Message msg){
+/*    private void readMessage(Message msg){
         String byteStr="";
         byte[] tempByte;
         String hexString="";
@@ -315,6 +314,42 @@ public class MainActivity extends Activity{
 //        String fuelUsed = readString;
 //        displayMetric(fuelUsed);
 
+    }*/
+
+    private void readMessage(Message msg){
+        Console.log("Reading message!");
+        byte[] readBuffer = (byte[]) msg.obj;
+        String bufferString = new String(readBuffer, 0, msg.arg1);
+
+        if(bufferString!="" && bufferString.matches("\\s*[0-9A-Fa-f]{2} [0-9A-Fa-f]{2} [0-9A-Fa-f]{2} [0-9A-Fa-f]{2}\\s*\r?\n?")){
+            Console.log("Buffer String matches 8 digit pattern: "+bufferString);
+
+            bufferString.trim();
+            String[] bytes = bufferString.split(" ");
+
+            if((bytes[0]!=null) && (bytes[1]!=null) && (bytes[2]!=null) && (bytes[3]!=null)){
+                String firstPart = bytes[2];
+                String secondPart = bytes[3];
+                String finalString = firstPart+secondPart;
+                Console.log("No null pieces! They're "+firstPart+" and "+secondPart+" makes "+finalString);
+
+            } else Console.log("NUll pieces in first regex check :(");
+        }
+        else if (bufferString!="" && bufferString.matches("\\s*[0-9A-Fa-f]{2} [0-9A-Fa-f]{2} [0-9A-Fa-f]{2}\\s*\r\n?")){
+            Console.log("Buffer String matches 4 digit pattern: "+bufferString);
+
+            bufferString.trim();
+            String[] bytes = bufferString.split(" ");
+
+            if((bytes[0]!=null) && (bytes[1]!=null) && (bytes[2]!=null)){
+                String secondPart = bytes[2];
+                Console.log("No null pieces! It's "+secondPart);
+
+            } else Console.log("NUll pieces in second regex check :(");
+        }
+        else {
+            Console.log("Buffer string doesn't match regex, it's "+bufferString);
+        }
     }
 
     private void hexToInt(String hexString){
