@@ -65,7 +65,7 @@ public class MainActivity extends Activity{
     private TextView connectStatus;
     private EditText userInput;
 
-    private String command;
+    private String command="";
     private int initFuel;
     private float tankCapacity;
     private final double treesPerGallon = 0.228;
@@ -250,6 +250,7 @@ public class MainActivity extends Activity{
                     Console.log(classID+"Write command given");
                     break;
                 case MESSAGE_READ:
+                    Console.log(classID+" calling read message");
                     readMessage(msg);
 
                     break;
@@ -265,52 +266,44 @@ public class MainActivity extends Activity{
     };
 
     private void readMessage(Message msg){
-        String dataString;
         String byteStr="";
         byte[] tempByte;
-        Console.log(classID+"Reading response");
+        String hexString="";
+
         byte[] readBuffer = (byte[]) msg.obj;
         String bufferString = new String(readBuffer, 0, msg.arg1);
+
         Console.log(classID+"\n"+"Raw buffer is: "+bufferString);
 
-//        switch(readBuffer.length){
-//            case 8:
-//                tempByte = Arrays.copyOfRange(readBuffer, 8, readBuffer.length-1);
-//                Console.log("Buffer length is 8 bytes, last byte is "+tempByte);
-//                byteStr = new String(tempByte);
-//                break;
-//            case 6:
-//                tempByte = Arrays.copyOfRange(readBuffer, 6, readBuffer.length-1);
-//                Console.log("Buffer length is 6 bytes, last byte is "+tempByte);
-//                byteStr = new String(tempByte);
-//                break;
-//            default:
-//                Console.log("Some wrong length "+readBuffer.length);
-//                break;
-//        }
+        if(command.equals("012f")){
 
-//        byte[] dataByte = Arrays.copyOfRange(readBuffer, readBuffer.length-2, readBuffer.length-1);
-        if(!command.equals("012f")) {
-            String arraylen = new String(String.valueOf(readBuffer.length-1));
-            tempByte = Arrays.copyOfRange(readBuffer, 8, readBuffer.length-1);
+            tempByte = Arrays.copyOfRange(readBuffer, 6, readBuffer.length-1);
             byteStr = new String(tempByte);
-            Console.log("NOT FUEL Buffer length is "+readBuffer.length+" till "+arraylen+", last byte is "+byteStr);
+//            hexString = bufferString.substring(bufferString.length()-4,bufferString.length()-1);
+//            for(int i=0;i<bufferString.length();i++){
+//                Console.log("BUffer string at "+i+" is "+bufferString.charAt(i));
+//            }
+            if(bufferString.length()>6){
+                hexString += bufferString.substring(6,8);
+            }
         }
 
         else {
-            String arraylen = new String(String.valueOf(readBuffer.length-1));
             tempByte = Arrays.copyOfRange(readBuffer, 6, readBuffer.length-1);
             byteStr = new String(tempByte);
-//            Console.log("Buffer length is 6 bytes, last byte is "+byteStr);
-            Console.log("FUEL Buffer length is "+readBuffer.length+" till "+arraylen+", last byte is "+byteStr);
+//            for(int i=0;i<bufferString.length();i++){
+//                Console.log("BUffer string at "+i+" is "+bufferString.charAt(i));
+
+//            hexString = bufferString.substring(bufferString.length()-4,bufferString.length()-1);
+            if(bufferString.length()>6){
+                hexString += bufferString.substring(6,11);
+            }
+            hexString.trim();
+
         }
+        response.append("\n"+"Command: "+command+"\n"+" Response: "+bufferString+"\n"+ "Bytes: "+byteStr+"\n"+ "Hex String: "+hexString);
 
-
-//        String readString = new String(readBuffer, 0, msg.arg1);
-//        Console.log(classID+"\n"+"Response is: "+readString.trim() + " ");
-
-        response.append("\n"+"Command: "+command+"\n"+" Response: "+bufferString+"\n"+ "Bytes: "+byteStr);
-
+        hexToInt(hexString);
 //        int currentFuelPercentage = Integer.parseInt(readString);
 //        Console.log(classID+"Fuel in int is "+currentFuelPercentage);
 //
@@ -322,6 +315,22 @@ public class MainActivity extends Activity{
 //        String fuelUsed = readString;
 //        displayMetric(fuelUsed);
 
+    }
+
+    private void hexToInt(String hexString){
+
+        if(hexString.length()==5){
+//            String temp = hexString.substring(1,2);
+//            String temp2 = hexString.substring(4,5);
+            String[] temp = hexString.split(" ");
+            Console.log("temps are "+temp[0]+temp[1]);
+            return;
+        }
+        if(hexString.length()>0) {
+            Console.log("hexString "+hexString+" length "+hexString.length());
+            int value = Integer.parseInt(hexString, 16);
+            Console.log("Int "+value);
+        }
     }
 
     private void onConnect(){

@@ -59,14 +59,21 @@
             android:text="Response: "
             android:padding="10px"
             android:layout_below="@id/sendingLabel"/>
-    <TextView
+
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/responseLabel"
+        android:layout_below="@+id/sendingMessage">
+        <TextView
             android:id="@+id/response"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Null"
             android:padding="10px"
-            android:layout_toRightOf="@+id/responseLabel"
-            android:layout_below="@+id/sendingMessage"/>
+            />
+        </ScrollView>
+
 
     <!--<TextView-->
         <!--android:id="@+id/fuelUsed"-->
