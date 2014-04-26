@@ -29,7 +29,6 @@ public class MainActivity extends Activity{
     
     private final String classID = "MainActivity";
 
-
     // Name of the connected device
     private String mConnectedDeviceName = null;
     // String buffer for outgoing messages
@@ -179,6 +178,7 @@ public class MainActivity extends Activity{
             byte[] toSend = message.getBytes();
             mChatService.write(toSend);
             Console.log(classID+"Written "+message);
+            LogWriter.writeData("\n"+"Command: "+message);
 
             /*Reset output buffer*/
             mOutStringBuffer.setLength(0);
@@ -255,7 +255,6 @@ public class MainActivity extends Activity{
                     break;
                 case MESSAGE_READ:
                     readMessage(msg);
-
                     break;
                 case MESSAGE_DEVICE_NAME:
 
@@ -324,6 +323,8 @@ public class MainActivity extends Activity{
         Console.log("Reading message!");
         byte[] readBuffer = (byte[]) msg.obj;
         String bufferString = new String(readBuffer, 0, msg.arg1);
+
+        LogWriter.writeData("\n"+"Response: "+bufferString.trim()+" ");
 
         /*If we get 4 bytes of data returned*/
         if(bufferString!="" && bufferString.matches("\\s*[0-9A-Fa-f]{2} [0-9A-Fa-f]{2} [0-9A-Fa-f]{2} [0-9A-Fa-f]{2}\\s*\r?\n?")){

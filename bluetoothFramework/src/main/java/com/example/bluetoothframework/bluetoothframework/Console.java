@@ -8,6 +8,8 @@ import android.widget.Toast;
 public class Console {
     public static void log(String message){
         Log.d("Console", message);
+        LogWriter.writeData("\n"+"Console: "+message);
+
     }
     public static void logAndShow(Context context, String message){
         Console.log(message);
