@@ -73,6 +73,8 @@ public class MainActivity extends Activity{
 
     private final String PREFS_NAME = "MyPreferences";
 
+    boolean fuel = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -151,13 +153,17 @@ public class MainActivity extends Activity{
         /*Initialize buffer for outgoing messages*/
         mOutStringBuffer = new StringBuffer("");
 
+        /*Send initial blank message to recieve OK*/ //TODO: trigger this
+
+        sendMessage(""+"\r");
+
         getDataButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 command = userInput.getText().toString();
                 userInput.setText("");
-                sendMessage(command + "\r"); //get Fuel Percentage
+                sendMessage(command + "\r");
                 sendingMessage.setText("\n" + "Sent " + command);
             }
         });
@@ -254,6 +260,12 @@ public class MainActivity extends Activity{
                     Console.log(classID+"Write command given");
                     break;
                 case MESSAGE_READ:
+
+                    if(command.equals("012f")){
+                        Console.log(classID+" asking for fuel");
+                        fuel = true;
+                    }
+                    else fuel=false;
                     readMessage(msg);
                     break;
                 case MESSAGE_DEVICE_NAME:
@@ -267,57 +279,7 @@ public class MainActivity extends Activity{
         }
     };
 
-/*    private void readMessage(Message msg){
-        String byteStr="";
-        byte[] tempByte;
-        String hexString="";
 
-        byte[] readBuffer = (byte[]) msg.obj;
-        String bufferString = new String(readBuffer, 0, msg.arg1);
-
-        Console.log(classID+"\n"+"Raw buffer is: "+bufferString);
-
-        if(command.equals("012f")){
-
-            tempByte = Arrays.copyOfRange(readBuffer, 6, readBuffer.length-1);
-            byteStr = new String(tempByte);
-//            hexString = bufferString.substring(bufferString.length()-4,bufferString.length()-1);
-//            for(int i=0;i<bufferString.length();i++){
-//                Console.log("BUffer string at "+i+" is "+bufferString.charAt(i));
-//            }
-            if(bufferString.length()>6){
-                hexString += bufferString.substring(6,8);
-            }
-        }
-
-        else {
-            tempByte = Arrays.copyOfRange(readBuffer, 6, readBuffer.length-1);
-            byteStr = new String(tempByte);
-//            for(int i=0;i<bufferString.length();i++){
-//                Console.log("BUffer string at "+i+" is "+bufferString.charAt(i));
-
-//            hexString = bufferString.substring(bufferString.length()-4,bufferString.length()-1);
-            if(bufferString.length()>6){
-                hexString += bufferString.substring(6,11);
-            }
-            hexString.trim();
-
-        }
-        response.append("\n"+"Command: "+command+"\n"+" Response: "+bufferString+"\n"+ "Bytes: "+byteStr+"\n"+ "Hex String: "+hexString);
-
-        hexToInt(hexString);
-//        int currentFuelPercentage = Integer.parseInt(readString);
-//        Console.log(classID+"Fuel in int is "+currentFuelPercentage);
-//
-//        int percentFuelUsed = initFuel - currentFuelPercentage;
-//        float fuelUsed = tankCapacity*(percentFuelUsed/100); //Find exact gallons used at this moment
-//
-//        fuelUsedData.setText("Used up "+fuelUsed+" gallons since last check");
-
-//        String fuelUsed = readString;
-//        displayMetric(fuelUsed);
-
-    }*/
 
     private void readMessage(Message msg){
         Console.log("Reading message!");
@@ -366,7 +328,10 @@ public class MainActivity extends Activity{
         }
         else {
             Console.log("Buffer string doesn't match regex, it's "+bufferString);
+            response.append("\n"+"Command: "+command+"\n"+" Response: "+bufferString);
         }
+
+
     }
 
     private void hexToInt(String hexString){
@@ -375,19 +340,10 @@ public class MainActivity extends Activity{
         Console.log("Converted! "+hexString+ " to "+value);
 
         intVal.setText(value+"");
-
-//        if(hexString.length()==5){
-////            String temp = hexString.substring(1,2);
-////            String temp2 = hexString.substring(4,5);
-//            String[] temp = hexString.split(" ");
-//            Console.log("temps are "+temp[0]+temp[1]);
-//            return;
-//        }
-//        if(hexString.length()>0) {
-//            Console.log("hexString "+hexString+" length "+hexString.length());
-//            int value = Integer.parseInt(hexString, 16);
-//            Console.log("Int "+value);
-//        }
+        if(fuel == true){
+            Console.log(classID+" hexToInt confirms fuel request");
+            displayMetric((float)value);
+        }
     }
 
     private void onConnect(){
@@ -410,11 +366,14 @@ public class MainActivity extends Activity{
     }
 
 
-    private void displayMetric(float fuelUsed){
+    private void displayMetric(float fuelValue){
 
-        double treesUsed = fuelUsed*treesPerGallon;
+        float fuelVal = (fuelValue/255);
+        value.setText(fuelVal+"% of tank");
+        float treesUsed = (float) (fuelVal*treesPerGallon);
 
-        metricVal.setText(treesUsed+ " tree seedlings grown per 10 years");
+        metricVal.setText(treesUsed+ " tree seedlings grown for 10 years");
+        Console.log("Int is "+fuelValue+" converted to "+fuelVal+" percent of tank, "+treesUsed+" treel killed");
 
     }
 
