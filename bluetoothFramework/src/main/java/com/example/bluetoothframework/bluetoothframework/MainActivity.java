@@ -58,13 +58,14 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
     private Button getDataButton;
     private Button scanButton;
-    private Button getContDataButton;
+//    private Button getContDataButton;
     private Button fuelButton;
     private Button fuelSysButton;
     private Button speedButton;
     private Button rpmButton;
     private Button timeButton;
     private Button clearButton;
+    private Button coolantButton;
 
     private TextView sendingMessage;
     private TextView response;
@@ -83,6 +84,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
     private final String PREFS_NAME = "MyPreferences";
 
     boolean fuel = false;
+    private String buttonClicked="";
 
 
     @Override
@@ -94,13 +96,14 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
         getDataButton = (Button)(findViewById(R.id.getDataButton));
         scanButton = (Button)(findViewById(R.id.scanButton));
-        getContDataButton = (Button)(findViewById(R.id.contDataButton));
+//        getContDataButton = (Button)(findViewById(R.id.contDataButton));
         fuelButton = (Button)(findViewById(R.id.fuelButton));
         fuelSysButton = (Button)(findViewById(R.id.fuelSysButton));
         speedButton = (Button)(findViewById(R.id.speedButton));
         rpmButton= (Button)(findViewById(R.id.rpmButton));
         timeButton = (Button)(findViewById(R.id.timeButton));
         clearButton = (Button)(findViewById(R.id.clearButton));
+        coolantButton = (Button)(findViewById(R.id.coolantButton));
 
 
         sendingMessage = (TextView)(findViewById(R.id.sendingMessage));
@@ -118,6 +121,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
         rpmButton.setOnClickListener(this);
         timeButton.setOnClickListener(this);
         clearButton.setOnClickListener(this);
+        coolantButton.setOnClickListener(this);
 
         mBluetoothAdapter = mBluetoothAdapter.getDefaultAdapter();
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices(); //Preloaded paired devices in memory
@@ -366,12 +370,11 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
         int value = Integer.parseInt(hexString, 16);
         Console.log("Converted! "+hexString+ " to "+value);
+        Console.log("hex to int checking button type, its "+buttonClicked);
 
         intVal.setText(value+"");
-        if(fuel == true){
-            Console.log(classID+" hexToInt confirms fuel request");
-            displayMetric((float)value);
-        }
+        displayMetric(buttonClicked, value);
+
     }
 
     private void onConnect(){
@@ -394,14 +397,55 @@ public class MainActivity extends Activity implements View.OnClickListener{
     }
 
 
-    private void displayMetric(float fuelValue){
+    private void displayMetric(String buttonClicked, float intValue){
 
-        float fuelVal = (fuelValue/255);
-        value.setText(fuelVal+"% of tank");
-        float treesUsed = (float) (fuelVal*treesPerGallon);
+        if(buttonClicked.equals("fuelButton")){
+            Console.log("Type "+buttonClicked);
+            float fuelVal = (intValue/255);
+            value.setText(fuelVal+"% of tank");
+            float treesUsed = (float) (fuelVal*treesPerGallon);
 
-        metricVal.setText(treesUsed+ " tree seedlings grown for 10 years");
-        Console.log("Int is "+fuelValue+" converted to "+fuelVal+" percent of tank, "+treesUsed+" treel killed");
+            metricVal.setText(treesUsed+ " tree seedlings grown for 10 years");
+            Console.log("Int is "+intValue+" converted to "+fuelVal+" percent of tank, "+treesUsed+" treel killed");
+
+        }else if(buttonClicked.equals("fuelSysButton")){
+            Console.log("Type "+buttonClicked);
+            value.setText("");
+            metricVal.setText("");
+
+        }else if(buttonClicked.equals("speedButton")){
+            Console.log("Type "+buttonClicked);
+
+            float mph = (float) (intValue/1.6);
+
+            value.setText(intValue+"km/h "+mph+" mph");
+            metricVal.setText("");
+
+        }else if(buttonClicked.equals("rpmButton")){
+            Console.log("Type "+buttonClicked);
+            value.setText("");
+            metricVal.setText("");
+
+        }else if(buttonClicked.equals("timeButton")){
+            Console.log("Type "+buttonClicked);
+            value.setText("");
+            metricVal.setText("");
+
+        }else if(buttonClicked.equals("coolantButton")){
+            Console.log("Type "+buttonClicked);
+
+            float celsius = intValue-40;
+            float fahrenheit = (((celsius*9)/5)+9);
+
+            value.setText(celsius+" C "+fahrenheit+" F");
+            metricVal.setText("");
+
+        }else{
+            Console.log("Wrong button clicked type!!");
+            value.setText("");
+            metricVal.setText("");
+        }
+
 
     }
 
@@ -439,32 +483,33 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
     @Override
     public void onClick(View v) {
+
+        buttonClicked = (String) v.getTag();
+
         switch (v.getId()){
             case R.id.fuelButton:
-                Console.log("clicked on fuel button");
                 userInput.setText("012F");
                 userInput.setSelection(userInput.getText().length());
                 break;
             case R.id.fuelSysButton:
-                Console.log("clicked on fuel remaining button");
                 userInput.setText("015E");
                 userInput.setSelection(userInput.getText().length());
                 break;
             case R.id.speedButton:
-                Console.log("clicked on speed button");
                 userInput.setText("010D");
                 userInput.setSelection(userInput.getText().length());
                 break;
             case R.id.rpmButton:
-                Console.log("clicked on RPM button");
                 userInput.setText("010C");
                 userInput.setSelection(userInput.getText().length());
                 break;
             case R.id.timeButton:
-                Console.log("clicked on time button");
                 userInput.setText("011F");
                 userInput.setSelection(userInput.getText().length());
                 break;
+            case R.id.coolantButton:
+                userInput.setText("0105");
+                userInput.setSelection(userInput.getText().length());
             case R.id.clearButton:
                 response.setText("");
                 hexVal.setText("");

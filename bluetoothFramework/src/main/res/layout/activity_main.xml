@@ -17,6 +17,7 @@
 
         <Button
             android:id="@+id/fuelButton"
+            android:tag="fuelButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="F.level \n 012F"
@@ -24,6 +25,7 @@
             />
         <Button
             android:id="@+id/fuelSysButton"
+            android:tag="fuelSysButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="F.Rem\n 015E"
@@ -31,6 +33,7 @@
             />
         <Button
             android:id="@+id/speedButton"
+            android:tag="speedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Speed \n 010D"
@@ -38,6 +41,7 @@
             />
         <Button
             android:id="@+id/rpmButton"
+            android:tag="rpmButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="RPM \n 010C"
@@ -46,9 +50,18 @@
 
         <Button
             android:id="@+id/timeButton"
+            android:tag="timeButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Time \n 011F"
+            android:padding="10px"
+            />
+        <Button
+            android:id="@+id/coolantButton"
+            android:tag="coolantButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Coolant \n 0105"
             android:padding="10px"
             />
 
