@@ -19,13 +19,14 @@ import android.widget.TextView;
 
 import org.w3c.dom.Text;
 
+import java.sql.BatchUpdateException;
 import java.util.Arrays;
 import java.util.Set;
 
 //import android.support.v7.app.ActionBarActivity;
 
 //Created by sumayyah
-public class MainActivity extends Activity{
+public class MainActivity extends Activity implements View.OnClickListener{
     
     private final String classID = "MainActivity";
 
@@ -57,6 +58,14 @@ public class MainActivity extends Activity{
 
     private Button getDataButton;
     private Button scanButton;
+    private Button getContDataButton;
+    private Button fuelButton;
+    private Button fuelSysButton;
+    private Button speedButton;
+    private Button rpmButton;
+    private Button timeButton;
+    private Button clearButton;
+
     private TextView sendingMessage;
     private TextView response;
     private TextView connectStatus;
@@ -85,6 +94,15 @@ public class MainActivity extends Activity{
 
         getDataButton = (Button)(findViewById(R.id.getDataButton));
         scanButton = (Button)(findViewById(R.id.scanButton));
+        getContDataButton = (Button)(findViewById(R.id.contDataButton));
+        fuelButton = (Button)(findViewById(R.id.fuelButton));
+        fuelSysButton = (Button)(findViewById(R.id.fuelSysButton));
+        speedButton = (Button)(findViewById(R.id.speedButton));
+        rpmButton= (Button)(findViewById(R.id.rpmButton));
+        timeButton = (Button)(findViewById(R.id.timeButton));
+        clearButton = (Button)(findViewById(R.id.clearButton));
+
+
         sendingMessage = (TextView)(findViewById(R.id.sendingMessage));
         response = (TextView)(findViewById(R.id.response));
         connectStatus = (TextView)(findViewById(R.id.connectStatus));
@@ -93,6 +111,13 @@ public class MainActivity extends Activity{
         intVal = (TextView)(findViewById(R.id.intVal));
         value = (TextView)(findViewById(R.id.value));
         metricVal = (TextView)(findViewById(R.id.metricVal));
+
+        fuelButton.setOnClickListener(this);
+        fuelSysButton.setOnClickListener(this);
+        speedButton.setOnClickListener(this);
+        rpmButton.setOnClickListener(this);
+        timeButton.setOnClickListener(this);
+        clearButton.setOnClickListener(this);
 
         mBluetoothAdapter = mBluetoothAdapter.getDefaultAdapter();
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices(); //Preloaded paired devices in memory
@@ -142,6 +167,8 @@ public class MainActivity extends Activity{
             }
         });
 
+
+
     }
 
     private void setupChat(){
@@ -167,6 +194,7 @@ public class MainActivity extends Activity{
                 sendingMessage.setText("\n" + "Sent " + command);
             }
         });
+
 
     }
 
@@ -409,4 +437,44 @@ public class MainActivity extends Activity{
     }
 
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.fuelButton:
+                Console.log("clicked on fuel button");
+                userInput.setText("012F");
+                userInput.setSelection(userInput.getText().length());
+                break;
+            case R.id.fuelSysButton:
+                Console.log("clicked on fuel remaining button");
+                userInput.setText("015E");
+                userInput.setSelection(userInput.getText().length());
+                break;
+            case R.id.speedButton:
+                Console.log("clicked on speed button");
+                userInput.setText("010D");
+                userInput.setSelection(userInput.getText().length());
+                break;
+            case R.id.rpmButton:
+                Console.log("clicked on RPM button");
+                userInput.setText("010C");
+                userInput.setSelection(userInput.getText().length());
+                break;
+            case R.id.timeButton:
+                Console.log("clicked on time button");
+                userInput.setText("011F");
+                userInput.setSelection(userInput.getText().length());
+                break;
+            case R.id.clearButton:
+                response.setText("");
+                hexVal.setText("");
+                intVal.setText("");
+                value.setText("");
+                metricVal.setText("");
+                break;
+            default:
+                Console.log("Some other button clicked!");
+                break;
+        }
+    }
 }

@@ -9,12 +9,58 @@
     android:id="@+id/container"
     tools:context="com.example.bluetoothframework.bluetoothframework.MainActivity">
 
+    <LinearLayout
+        android:id="@+id/buttonRow"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/fuelButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="F.level \n 012F"
+            android:padding="10px"
+            />
+        <Button
+            android:id="@+id/fuelSysButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="F.Rem\n 015E"
+            android:padding="10px"
+            />
+        <Button
+            android:id="@+id/speedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Speed \n 010D"
+            android:padding="10px"
+            />
+        <Button
+            android:id="@+id/rpmButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="RPM \n 010C"
+            android:padding="10px"
+            />
+
+        <Button
+            android:id="@+id/timeButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Time \n 011F"
+            android:padding="10px"
+            />
+
+        </LinearLayout>
+
     <TextView
             android:id="@+id/connectStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Not Connected"
             android:padding="10px"
+            android:layout_below="@+id/buttonRow"
             />
     <EditText
         android:layout_width="fill_parent"
@@ -37,6 +83,22 @@
         android:layout_below="@+id/userInput"
         android:padding="10px"
         android:text="Connect"/>
+    <!--<Button-->
+        <!--android:id="@+id/contDataButton"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_toRightOf="@+id/scanButton"-->
+        <!--android:layout_below="@+id/userInput"-->
+        <!--android:padding="10px"-->
+        <!--android:text="Get Cont. Data"/>-->
+    <Button
+        android:id="@+id/clearButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/scanButton"
+        android:layout_below="@+id/userInput"
+        android:padding="10px"
+        android:text="Clear Log"/>
 
     <RelativeLayout
         android:id="@+id/logLayout"
