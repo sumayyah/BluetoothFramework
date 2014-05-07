@@ -6,6 +6,8 @@ import android.widget.Toast;
  * Created by sumayyah on 4/2/14.
  */
 public class Console {
+
+    //Log to IDE console
     public static void log(String message){
         Log.d("Console", message);
         LogWriter.writeData("\n"+"Console: "+message);
