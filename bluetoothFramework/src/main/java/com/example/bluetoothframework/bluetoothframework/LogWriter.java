@@ -21,12 +21,15 @@ public class LogWriter {
         Thread w_thread = new Thread() {
             public void run() {
 //                File myFilesDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Android/data/CarData/files");
-                File myFilesDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/storage/emulated/0/Android/carData");
-                myFilesDir.mkdirs();
+                File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/storage/emulated/0/Android/carData");
+                file.mkdirs();
+
 
                 String dataline = (timestamp() + ", " + data + "\n");
 
-                File myfile = new File(myFilesDir + "/" + "Term_Log" + sDate() + ".txt");
+                String dataString = (System.currentTimeMillis()+"\n"+ data + "\n");
+
+                File myfile = new File(file + "/" + "Log" + getDate() + ".txt");
 //                File myfile = new File("carData.txt");
                 if(myfile.exists() == true)
                 {
@@ -70,5 +73,13 @@ public class LogWriter {
         return sDate;
     }
 
+    @SuppressLint("SimpleDateFormat")
+    public static String getDate(){
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        java.util.Date date= new java.util.Date();
+        String sDate = sdf.format(date.getTime());
+        return sDate;
+    }
 
 }

@@ -47,21 +47,37 @@
             android:text="RPM \n 010C"
             android:padding="10px"
             />
-
         <Button
-            android:id="@+id/timeButton"
-            android:tag="timeButton"
+            android:id="@+id/mafButton"
+            android:tag="mafButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Time \n 011F"
+            android:text="MAF \n 0110"
             android:padding="10px"
             />
+
+        <!--<Button-->
+            <!--android:id="@+id/timeButton"-->
+            <!--android:tag="timeButton"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="Time \n 011F"-->
+            <!--android:padding="10px"-->
+            <!--/>-->
         <Button
             android:id="@+id/coolantButton"
             android:tag="coolantButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Coolant \n 0105"
+            android:padding="10px"
+            />
+        <Button
+            android:id="@+id/checkISOButton"
+            android:tag="checkISOButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Chk \n ISO"
             android:padding="10px"
             />
 

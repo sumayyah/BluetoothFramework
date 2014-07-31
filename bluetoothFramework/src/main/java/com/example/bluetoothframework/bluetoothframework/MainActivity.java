@@ -58,14 +58,15 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
     private Button getDataButton;
     private Button scanButton;
-//    private Button getContDataButton;
     private Button fuelButton;
     private Button fuelSysButton;
     private Button speedButton;
     private Button rpmButton;
+    private Button mafButton;
     private Button timeButton;
     private Button clearButton;
     private Button coolantButton;
+    private Button checkISOButton;
 
     private TextView sendingMessage;
     private TextView response;
@@ -101,9 +102,11 @@ public class MainActivity extends Activity implements View.OnClickListener{
         fuelSysButton = (Button)(findViewById(R.id.fuelSysButton));
         speedButton = (Button)(findViewById(R.id.speedButton));
         rpmButton= (Button)(findViewById(R.id.rpmButton));
-        timeButton = (Button)(findViewById(R.id.timeButton));
+        mafButton = (Button)(findViewById(R.id.mafButton));
+//        timeButton = (Button)(findViewById(R.id.timeButton));
         clearButton = (Button)(findViewById(R.id.clearButton));
         coolantButton = (Button)(findViewById(R.id.coolantButton));
+        checkISOButton = (Button)(findViewById(R.id.checkISOButton));
 
 
         sendingMessage = (TextView)(findViewById(R.id.sendingMessage));
@@ -119,9 +122,11 @@ public class MainActivity extends Activity implements View.OnClickListener{
         fuelSysButton.setOnClickListener(this);
         speedButton.setOnClickListener(this);
         rpmButton.setOnClickListener(this);
-        timeButton.setOnClickListener(this);
+        mafButton.setOnClickListener(this);
+//        timeButton.setOnClickListener(this);
         clearButton.setOnClickListener(this);
         coolantButton.setOnClickListener(this);
+        checkISOButton.setOnClickListener(this);
 
         mBluetoothAdapter = mBluetoothAdapter.getDefaultAdapter();
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices(); //Preloaded paired devices in memory
@@ -348,11 +353,12 @@ public class MainActivity extends Activity implements View.OnClickListener{
             String[] bytes = bufferString.split(" ");
 
             if((bytes[0]!=null) && (bytes[1]!=null) && (bytes[2]!=null)){
-                String secondPart = bytes[2];
-                Console.log("No null pieces! It's "+secondPart);
 
-                hexVal.setText("0x"+secondPart);
-                hexToInt(secondPart);
+                String value2 = bytes[2];
+                Console.log("No null pieces! It's "+value2);
+
+                hexVal.setText("0x"+value2);
+                hexToInt(value2);
 
                 response.append("\n"+"Command: "+command+"\n"+" Response: "+bufferString);
 
@@ -426,7 +432,13 @@ public class MainActivity extends Activity implements View.OnClickListener{
             value.setText("");
             metricVal.setText("");
 
-        }else if(buttonClicked.equals("timeButton")){
+        }else if(buttonClicked.equals("timeButton")) {
+            Console.log("Type " + buttonClicked);
+            value.setText("");
+            metricVal.setText("");
+
+        }
+        else if(buttonClicked.equals("mafButton")){
             Console.log("Type "+buttonClicked);
             value.setText("");
             metricVal.setText("");
@@ -440,6 +452,9 @@ public class MainActivity extends Activity implements View.OnClickListener{
             value.setText(celsius+" C "+fahrenheit+" F");
             metricVal.setText("");
 
+        }else if(buttonClicked.equals("checkISOButton")){
+
+            Console.log("Type "+buttonClicked);
         }else{
             Console.log("Wrong button clicked type!!");
             value.setText("");
@@ -503,12 +518,20 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 userInput.setText("010C");
                 userInput.setSelection(userInput.getText().length());
                 break;
-            case R.id.timeButton:
-                userInput.setText("011F");
+            case R.id.mafButton:
+                userInput.setText("0110");
                 userInput.setSelection(userInput.getText().length());
                 break;
+//            case R.id.timeButton:
+//                userInput.setText("011F");
+//                userInput.setSelection(userInput.getText().length());
+//                break;
             case R.id.coolantButton:
                 userInput.setText("0105");
+                userInput.setSelection(userInput.getText().length());
+                break;
+            case R.id.checkISOButton:
+                userInput.setText("ATDP");
                 userInput.setSelection(userInput.getText().length());
             case R.id.clearButton:
                 response.setText("");
